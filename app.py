@@ -8,12 +8,14 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 debug = DebugToolbarExtension(app)
 
-responses = []
-
 
 @app.route("/")
 def start():
     """ Create homepage with start button. """
+
+    session["responses"] = []
+    # can derive question_id from responses
+    session["question_id"] = 0
 
     return render_template("survey_start.html",
                            survey_title=survey.title,
@@ -31,24 +33,32 @@ def survey_begin():
 def questions(question_id):
     """ Generates and returns question page from question_id. """
 
-    return render_template("question.html",
-                           question=survey.questions[question_id],
-                           question_id=question_id)
+    if question_id != session["question_id"]:
+        flash("We brought you back to your current question")
+        return redirect (f"/questions/{session['question_id']}")
+    elif session["question_id"] == len(survey.questions):
+        return redirect ("/completion")
+    else: 
+        return render_template("question.html",
+                            question=survey.questions[question_id],
+                            question_id=question_id)
 
 
 @app.route("/answer", methods=["POST"])
 def answer_page():
-    """ Appends answer and redirects to next question
+    """ Appends answer to session and redirects to next question
         if next question outside of range of questions, redirect
         to completion page.
     """
-
+# session["responses"].append.....
+    responses = session["responses"]
     responses.append(request.form["answer"])
+    session["responses"] = responses
 
-    new_id = int(request.form["question-id"]) + 1
+    session["question_id"] += 1
 
-    if new_id < len(survey.questions):
-        return redirect(f"/questions/{new_id}")
+    if session["question_id"] < len(survey.questions):
+        return redirect(f"/questions/{session['question_id']}")
     else:
         return redirect("/completion")
 

@@ -2,6 +2,8 @@
 {% block content %}
 
   <h1>{{ question.question }}</h1>
+<!-- for loop can make flash more dynamic and in base -->
+  <h2>{{ get_flashed_messages()[0] }}</h2>
 
   <form action="/answer" method="POST">
 
@@ -14,11 +16,6 @@
         {{ choice }}
       </p>
       {% endfor %}
-
-      <input
-          type="hidden"
-          name="question-id"
-          value="{{ question_id }}">
 
     <button>Continue</button>
   </form>
