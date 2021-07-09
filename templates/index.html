@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form action="/homeX" method="POST">
+    <label for="survey-type">Choose Your Survey</label>
+    <select name="survey-type">
+      <option value="satisfaction">Satisfaction Survey</option>
+      <option value="personality">Personality Survey</option>
+    </select>
+    <button>Start!</button>
+</form>
+
+{% endblock %}
