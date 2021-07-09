@@ -12,7 +12,7 @@ debug = DebugToolbarExtension(app)
 
 @app.route("/")
 def home_page():
-
+    
     return render_template("index.html")
 
 
@@ -32,21 +32,21 @@ def start():
 def survey_begin():
     """ Redirects user to the first question of correct survey. """
 
-    return redirect(f"{session['survey_type']}/questions/0")
+    return redirect(f"/{session['survey_type']}/questions/0")
 
 
-@app.route(f"{session['survey_type']}/questions/<int:question_id>")
-def questions(question_id):
+@app.route("/<survey_type>/questions/<int:question_id>")
+def questions(survey_type, question_id):
     """ Generates and returns question page from question_id. """
 
     if question_id != len(session["responses"]):
         flash("We brought you back to where you should be")
-        return redirect(f"/questions/{len(session['responses'])}")
-    elif len(session["responses"]) >= len(surveys.surveys[session['survey_type']].questions):
+        return redirect(f"/{survey_type}/questions/{len(session['responses'])}")
+    elif len(session["responses"]) >= len(surveys.surveys[survey_type].questions):
         return redirect("/completion")
     else:
         return render_template("question.html",
-                               question=surveys.surveys[session['survey_type']].questions[question_id])
+                               question=surveys.surveys[survey_type].questions[question_id])
 
 
 @app.route("/answer", methods=["POST"])
@@ -55,13 +55,13 @@ def answer_page():
         if next question outside of range of questions, redirect
         to completion page.
     """
-# session["responses"].append.....
+    
     responses = session["responses"]
     responses.append(request.form["answer"])
     session["responses"] = responses
 
     if len(session["responses"]) < len(surveys.surveys[session['survey_type']].questions):
-        return redirect(f"/questions/{len(session['responses'])}")
+        return redirect(f"/{session['survey_type']}/questions/{len(session['responses'])}")
     else:
         return redirect("/completion")
 
